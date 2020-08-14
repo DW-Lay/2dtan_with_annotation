@@ -3,7 +3,7 @@ config_file=configs/2dtan_64x64_pool_k9l4_activitynet.yaml
 # the dir of the saved weight
 weight_dir=outputs/2dtan_64x64_pool_k9l4_activitynet
 # select weight to evaluate
-weight_file=model_1e.pth
+weight_file=model_5e.pth
 # test batch size
 batch_size=32
 # set your gpu id

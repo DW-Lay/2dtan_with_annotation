@@ -57,11 +57,13 @@ def all_gather(data):
     world_size = get_world_size()
     if world_size == 1:
         return [data]
-    
+    # Python中的Pickle模块实现了基本的数据序列与反序列化。
+    # dump序列化操作
     buffer = pickle.dumps(data)
     storage = torch.ByteStorage.from_buffer(buffer)
     tensor = torch.ByteTensor(storage).to("cuda")
     # obtain Tensor size of each rank
+    # .numel()返回数组中元素的个数
     local_size = torch.LongTensor([tensor.numel()]).to("cuda")
     size_list = [torch.LongTensor([0]).to("cuda") for _ in range(world_size)]
     dist.all_gather(size_list, local_size)

@@ -18,7 +18,7 @@ _C.MODEL.WEIGHT = ""   # 模型的权重，    若为空，则直接开始训练
 # -----------------------------------------------------------------------------
 _C.INPUT = CN()
 _C.INPUT.NUM_PRE_CLIPS = 256  # 应该能够输入的clip的最大个数
-_C.INPUT.PRE_QUERY_SIZE = 300 # 查询语句的最大的单词个数  （猜的）
+_C.INPUT.PRE_QUERY_SIZE = 300 # 文本中词向量的长度
 
 # -----------------------------------------------------------------------------
 # Dataset
@@ -53,14 +53,14 @@ _C.MODEL.TAN.FEAT2D = CN()
 # 池化参数
 _C.MODEL.TAN.FEAT2D.POOLING_COUNTS = [15,8,8,8]
 
-# wordvec生成的词向量经过三层卷积之后再生成文本词向量
+# 整合视频和文本特征
 _C.MODEL.TAN.INTEGRATOR = CN()
 _C.MODEL.TAN.INTEGRATOR.QUERY_HIDDEN_SIZE = 512
 _C.MODEL.TAN.INTEGRATOR.LSTM = CN()
 _C.MODEL.TAN.INTEGRATOR.LSTM.NUM_LAYERS = 3
 _C.MODEL.TAN.INTEGRATOR.LSTM.BIDIRECTIONAL = False
 
-# 最后卷积输出的参数
+# 预测得分过程中最后卷积输出的参数
 _C.MODEL.TAN.PREDICTOR = CN() 
 _C.MODEL.TAN.PREDICTOR.HIDDEN_SIZE = 512
 _C.MODEL.TAN.PREDICTOR.KERNEL_SIZE = 5
@@ -81,11 +81,11 @@ _C.SOLVER.MAX_EPOCH = 12
 _C.SOLVER.LR = 0.01
 # 保存模型参数的周期
 _C.SOLVER.CHECKPOINT_PERIOD = 1
-# 测试周期    ？？？？？？？？？？？？？？？？？
+# 测试周期    
 _C.SOLVER.TEST_PERIOD = 1
 # 训练的batch_size
 _C.SOLVER.BATCH_SIZE = 32
-# 自动调整学习率，epoch到8遍一次，到11变一次
+# 自动调整学习率，epoch到8变一次，到11变一次
 _C.SOLVER.MILESTONES = (8, 11)
 
 # ---------------------------------------------------------------------------- #
@@ -94,7 +94,7 @@ _C.SOLVER.MILESTONES = (8, 11)
 _C.TEST = CN()
 # 测试的batch_size
 _C.TEST.BATCH_SIZE = 64
-# 非极大值抑制阈值
+# 非极大值抑制阈值  相似度大于0.4就去掉
 _C.TEST.NMS_THRESH = 0.4  
  
 # ---------------------------------------------------------------------------- #

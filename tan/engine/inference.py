@@ -31,9 +31,11 @@ def compute_on_dataset(model, data_loader, device, timer=None):
         results_dict.update(
             {img_id: result for img_id, result in zip(idxs, output)}
         )
+    # results_dict (id 1:result(4*64*64))
     return results_dict
 
 def _accumulate_predictions_from_multiple_gpus(predictions_per_gpu):
+    # 输出的all_predictions是一个list,每个元素为dict
     all_predictions = all_gather(predictions_per_gpu)
     if not is_main_process():
         return
@@ -69,7 +71,9 @@ def inference(
     logger.info("Start evaluation on {} dataset (Size: {}).".format(dataset_name, len(dataset)))
     total_timer = Timer()
     inference_timer = Timer()
+    # tic 表示计时开始   toc表示计时结束
     total_timer.tic()
+    # 返回一个dict  {id:predict_scores}
     predictions = compute_on_dataset(model, data_loader, device, inference_timer)
     # wait for all processes to complete before measuring the time
     synchronize()

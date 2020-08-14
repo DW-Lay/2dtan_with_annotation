@@ -57,11 +57,12 @@ def do_train(
         for iteration, (batches, targets, _) in enumerate(data_loader):
             iteration += 1
             data_time = time.time() - end
-
+            # 下面这行代码的意思是将所有最开始读取数据时的tensor变量copy一份到device所指定的GPU上去，之后的运算都在GPU上进行。
             batches = batches.to(device)
             targets = targets.to(device)
             
             def closure():
+                # optimizer.zero_grad()意思是把梯度置零，也就是把loss关于weight的导数变成0.
                 optimizer.zero_grad()
                 loss = model(batches, targets)
                 if iteration % 20 == 0 or iteration == max_iteration:
@@ -105,7 +106,7 @@ def do_train(
 
         if epoch % checkpoint_period == 0:
             checkpointer.save(f"model_{epoch}e", **arguments)
-
+            
         if data_loader_val is not None and test_period > 0 and \
             epoch % test_period == 0:
             synchronize()

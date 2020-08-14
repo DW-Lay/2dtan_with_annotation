@@ -34,6 +34,7 @@ def save_labels(dataset_list, output_dir):
 
 
 def save_config(cfg, path):
+    # rank==0  就是main_process
     if is_main_process():
         with open(path, 'w') as f:
             f.write(cfg.dump())

@@ -8,6 +8,7 @@ import torchtext
 # from torch.nn.functional import F
 import torch.nn.functional as F
 
+# iou()输出的是一个跟输入同样尺寸的重合率的2d图
 def iou(candidates, gt):
     start, end = candidates[:,0], candidates[:,1]
     s, e = gt[0].float(), gt[1].float()
@@ -24,6 +25,7 @@ def score2d_to_moments_scores(score2d, num_clips, duration):
     scores = score2d[grids[:,0], grids[:,1]]
     grids[:, 1] += 1
     # 为了求出每个clip所占的时间跨度
+    # duration为整个视频的时长
     moments = grids * duration / num_clips
     return moments, scores
 

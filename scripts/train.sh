@@ -15,3 +15,4 @@ output_dir=outputs/$model
 CUDA_VISIBLE_DEVICES=$gpus python -m torch.distributed.launch \
 --nproc_per_node=$gpun --master_addr $master_addr --master_port $master_port train_net.py --config-file $config_file OUTPUT_DIR $output_dir \
 
+# 在python后加参数的格式就是  --xxx  $yyy   其中yyy为上面配置好的路径或参数

@@ -11,6 +11,7 @@ class SparseMaxPool(nn.Module):
         stride, offset = 1, 0
         maskij = []
         for c in pooling_counts:
+            # c 为15 ，8 ， 8 ,8 表示的是先斜着写入15个，再以步长乘2写入八个，再往下以此类推
             for _ in range(c): 
                 # fill a diagonal line 
                 offset += stride

@@ -28,7 +28,7 @@ def train(cfg, local_rank, distributed):
     # 设置优化器
     optimizer = optim.Adam(model.parameters(), lr=cfg.SOLVER.LR)
     # 设置动态调整学习率
-    scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=cfg.SOLVER.MILESTONES)
+    scheduler = optim.lr_scheduler.MultiStepLR(optimizer, )
     # 开启分布式训练
     if distributed:
         print("local_rank=",local_rank)
@@ -135,10 +135,11 @@ def main():
     
     parser.add_argument(
         "--skip-test",
-        # 如果提供 dest 参数，参数值就保存为命令行参数解析时返回的命名空间对象中名为该 dest 参数值的一个属性。
+        # 如果提供 skip-dest 参数，参数值就保存为命令行参数解析时返回的命名空间对象中名为该 skip-dest 参数值的一个属性。
         dest="skip_test",
         help="Do not test the final model",
         # 默认为store,表示存参数的值  store_true/false  为保存相应的布尔值 触发时为真/假
+        # 因为在脚本里没有写，所有没有触发，所以默认为false
         action="store_true",
     )
     parser.add_argument(
@@ -173,6 +174,7 @@ def main():
     if output_dir:
         mkdir(output_dir)
     # 设置日志打印  tan  log名  output_dir 日志保存路径  get_rank()只让0号进程做日志
+    # 对于0号rank则配置屏幕输出和保存到文件中的debug日志输出    
     logger = setup_logger("tan", output_dir, get_rank())
     logger.info("Using {} GPUs".format(num_gpus))
     # 打印出在运行代码是配置的内容，显示一个命名空间 namespace
@@ -181,11 +183,12 @@ def main():
     logger.info("Loaded configuration file {}".format(args.config_file))
     with open(args.config_file, "r") as cf:
         config_str = "\n" + cf.read()
-        # 打印出正在运行的数据集的配置文件
+        # 打印出正在运行的数据集的配置文件  同时保存到log.txt中  
         logger.info(config_str)
         # 打印出被数据集配置文件更新以后的默认配置文件
     logger.info("Running with config:\n{}".format(cfg))
     # 拼接保存最终配置文件的保存路径
+    # cfg.OUTPUT_DIR 设置为  outputs/$model
     output_config_path = os.path.join(cfg.OUTPUT_DIR, 'config.yml')
     logger.info("Saving config into: {}".format(output_config_path))
     # save overloaded model config in the output directory
