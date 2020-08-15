@@ -44,6 +44,8 @@ class TACoSDataset(torch.utils.data.Dataset):
 
         self.feats = video2feats(feat_file, annos.keys(), num_pre_clips, dataset_name="tacos") 
 
+    # 如果在类中定义了__getitem__()方法，那么他的实例对象（假设为P）就可以这样P[key]取值。
+    # 当实例对象做P[key]运算时，就会调用类中的__getitem__()方法。
     def __getitem__(self, idx):
         anno = self.annos[idx]
         vid = anno['vid']

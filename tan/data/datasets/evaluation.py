@@ -49,7 +49,7 @@ def evaluate(dataset, predictions, nms_thresh, recall_metrics=(1,5), iou_metrics
     for idx, score2d in tqdm(enumerate(predictions)):  
         duration = dataset.get_duration(idx)
         moment = dataset.get_moment(idx) 
-        # candidates为每个位置的时间跨度，scores为非零位置的每个位置的分数
+        # candidates为每个非零位置的时间跨度，scores为非零位置的每个位置的分数
         candidates, scores = score2d_to_moments_scores(score2d, num_clips, duration)
         # recall_metrics[-1]  recall_metric的最后一个元素
         moments = nms(candidates, scores, topk=recall_metrics[-1], thresh=nms_thresh)

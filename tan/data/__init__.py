@@ -21,6 +21,7 @@ def build_dataset(dataset_list, dataset_catalog, cfg, is_train=True):
     datasets = []
     for dataset_name in dataset_list:
         data = dataset_catalog.get(dataset_name)
+        # 运行下面语句的结果是相当于factory = activitynet.py 或者factory= tacos.py
         factory = getattr(D, data["factory"])  # 等价于factory = getattr(D, "activitynetDatasets")
         # args  视频和文本所有的路径
         args = data["args"]
@@ -28,15 +29,18 @@ def build_dataset(dataset_list, dataset_catalog, cfg, is_train=True):
         args["num_clips"] = cfg.MODEL.TAN.NUM_CLIPS
         args["pre_query_size"] = cfg.INPUT.PRE_QUERY_SIZE
         # make dataset from factory
+        # dataset相当于Activitynet或者Tacos的一个实例 ，在这两个类中定义了__getitem()__ 方法
         dataset = factory(**args)
         datasets.append(dataset)
-        # dataset里包括annos和videofeat
+        # dataset里为一个list,list里包含总的片段数(17031),每个片段为一个tuple，里面分别是
+        # self.feats[vid], anno['query'], anno['wordlen'], anno['iou2d'], idx
 
     # for testing, return a list of datasets
     if not is_train:
         return datasets
 
     # for training, concatenate all datasets into a single one
+    # 因为在train的过程中，同时有训练集和交叉验证集
     dataset = datasets[0]
     if len(datasets) > 1:
         dataset = D.ConcatDataset(datasets)
@@ -93,6 +97,7 @@ def make_data_loader(cfg, is_train=True, is_distributed=False, is_for_period=Fal
     # TEST: ("tacos_test",)
     dataset_list = cfg.DATASETS.TRAIN if is_train else cfg.DATASETS.TEST
     # data_list  为训练集和交叉验证集的路径  以及测试集的路径
+    # 得到的datasets 为concat之后的list
     datasets = build_dataset(dataset_list, DatasetCatalog, cfg, is_train=is_train or is_for_period)
 
     data_loaders = []

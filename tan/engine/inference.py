@@ -17,16 +17,22 @@ def compute_on_dataset(model, data_loader, device, timer=None):
     cpu_device = torch.device("cpu")
     # tqdm是一个进度条显示的
     for batch in tqdm(data_loader):
+        # batches,targets,idxs的个数均为batch_size个
+        # batches里有feat(256*500(activitynet)或（256*4096(tacos)),query(wordlen*300),wordlen(query.size(0))
+        # targets 里为batch_size个真实的iou2d
+        # idxs为batch_size个标号（每个小片段一个idx)一共17031个(针对actiitynet)
         batches, targets, idxs = batch
         # 以下不需要计算梯度，也不需要反向传播
         with torch.no_grad():
             if timer:
                 timer.tic()
+            # output 就是scores2d.sigmoid_() * self.feat2d.mask2d  (batch_size*64*64)或者说(batch_size*num_clips*num_clips)
             output = model(batches.to(device))
             if timer:
                 if not device.type == 'cpu':
                     torch.cuda.synchronize()
                 timer.toc()
+            # [(num_clips*num_clips)]
             output = [o.to(cpu_device) for o in output]
         results_dict.update(
             {img_id: result for img_id, result in zip(idxs, output)}
